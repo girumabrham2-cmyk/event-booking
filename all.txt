@@ -1,0 +1,140 @@
+// FULL EVENT BOOKING SYSTEM (Frontend + Backend + Database)
+
+// ================= FRONTEND (React) =================
+
+import { useState, useEffect } from "react";
+
+export default function EventBookingApp() {
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/events")
+      .then(res => res.json())
+      .then(data => setEvents(data));
+  }, []);
+
+  const bookTicket = async () => {
+    const res = await fetch("http://localhost:5000/book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventId: selectedEvent._id, name })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>Event Booking System</h1>
+
+      {!selectedEvent ? (
+        <div>
+          <h2>Available Events</h2>
+          {events.map(event => (
+            <div key={event._id} style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}>
+              <h3>{event.title}</h3>
+              <p>{event.date}</p>
+              <p>Tickets Left: {event.tickets}</p>
+              <button onClick={() => setSelectedEvent(event)}>Book</button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          <h2>Booking: {selectedEvent.title}</h2>
+          <input
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <button onClick={bookTicket}>Confirm Booking</button>
+          <button onClick={() => setSelectedEvent(null)}>Back</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ================= BACKEND (Node.js + Express) =================
+
+// Install: npm install express mongoose cors
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://127.0.0.1:27017/eventdb");
+
+const EventSchema = new mongoose.Schema({
+  title: String,
+  date: String,
+  tickets: Number
+});
+
+const BookingSchema = new mongoose.Schema({
+  eventId: String,
+  name: String
+});
+
+const Event = mongoose.model("Event", EventSchema);
+const Booking = mongoose.model("Booking", BookingSchema);
+
+// Seed sample event
+app.get("/seed", async (req, res) => {
+  await Event.create({ title: "Music Concert", date: "2026-05-01", tickets: 50 });
+  res.send("Seeded");
+});
+
+// Get events
+app.get("/events", async (req, res) => {
+  const events = await Event.find();
+  res.json(events);
+});
+
+// Book ticket
+app.post("/book", async (req, res) => {
+  const { eventId, name } = req.body;
+
+  const event = await Event.findById(eventId);
+
+  if (!event || event.tickets <= 0) {
+    return res.json({ message: "No tickets available" });
+  }
+
+  event.tickets -= 1;
+  await event.save();
+
+  await Booking.create({ eventId, name });
+
+  res.json({ message: "Booking successful" });
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));
+
+// ================= DATABASE =================
+
+// MongoDB will automatically create:
+// - events collection
+// - bookings collection
+
+// ================= HOW TO RUN =================
+
+// 1. Start MongoDB
+// 2. Run backend: node server.js
+// 3. Call: http://localhost:5000/seed
+// 4. Run frontend: npm start
+
+// ================= OPTIONAL UPGRADES =================
+
+// - Add authentication (JWT)
+// - Add payment (Stripe)
+// - Admin dashboard to create events
+// - QR code ticket generation
+// - Email confirmation
