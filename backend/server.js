@@ -1,11 +1,23 @@
-const PORT = process.env.PORT || 10000; // Render likes 10000, local likes 5000
+const express = require('express'); // 1. Import the tool
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
 
-// Start the server FIRST
+const app = express(); // 2. DEFINE THE APP (This is what was missing!)
+
+// 3. Use the app for middleware
+app.use(cors());
+app.use(express.json());
+
+// 4. Define your connection and port
+const PORT = process.env.PORT || 10000;
+const MONGO_URI = process.env.MONGO_URI;
+
+// 5. Start the server
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is reaching out to Render on port ${PORT}`);
+    console.log(`🚀 Server is running on port ${PORT}`);
     
-    // THEN connect to the database
-    mongoose.connect(process.env.MONGO_URI)
+    mongoose.connect(MONGO_URI)
         .then(() => console.log("✅ MongoDB Connected"))
-        .catch(err => console.log("❌ MongoDB Error:", err.message));
+        .catch(err => console.log("❌ MongoDB Error:", err));
 });
