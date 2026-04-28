@@ -257,7 +257,33 @@ Say one of these:
 mongodb atlas
 		goas
 
-	girumabrham2_db_user
-	CM0dCmGsxOy1IV8h
+	username/password
+		girumabrham2_db_user
+		CM0dCmGsxOy1IV8h
+	IP
+		196.189.152.128
+	organ ID
+		69ec6fc12f78f1f7b11215c7
+	org. name
+		goas_inc
 
-	196.189.152.128
+	connection string
+		mongodb+srv://girumabrham2_db_user:<CM0dCmGsxOy1IV8h>@goas.hj9j1ke.mongodb.net/?appName=goas
+
+
+
+Remember the golden rule of Git as you keep coding:
+
+    Work on your code.
+
+    git add . (Stage your changes).
+
+    git commit -m "..." (Describe your progress).
+
+    git push (Back it up to the cloud).
+
+render
+	 https://render.com/docs/troubleshooting-deploys
+
+
+		https://event-booking-udyx.onrender.com
