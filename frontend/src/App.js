@@ -6,7 +6,7 @@ function App() {
   useEffect(() => {
     fetch("https://event-booking-udyx.onrender.com/events")
       .then(res => res.json())
-      .then(data => setEvents(data));
+      .then(data => setEvents(JSON.parse(data)));
   }, []);
 
   return (

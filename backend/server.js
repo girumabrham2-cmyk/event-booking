@@ -9,6 +9,25 @@ const app = express(); // 2. DEFINE THE APP (This is what was missing!)
 app.use(cors());
 app.use(express.json());
 
+app.get("/events", async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+/*app.get("/", (req, res) => {
+    res.send("API is working!");
+});
+/*app.get("/events", async (req, res) => {
+  const events = await Event.find();
+  res.json(events);
+});*/
+
 // 4. Define your connection and port
 const PORT = process.env.PORT || 10000;
 const MONGO_URI = process.env.MONGO_URI;
